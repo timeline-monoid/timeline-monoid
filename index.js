@@ -1,32 +1,34 @@
 (() => {
   "use strict";
   const now = "now";
-  const T = (t = []) => (t.wrapF)
+  const T = (t = []) => (t.wrapF || t.identity)
     ? t
     : (() => {
-      const t0 = t1 => {
-        const t01 = T((timeline) => { //construct binded TL event
-          timeline.units = (t0.units)
-            ? t0.units.concat(t1)
-            : [t0, t1];
-          const reset = () => timeline.units
-            .map((t, i) => updates[i][now] = 0);
-          const update = () => timeline[now] = timeline.units
-            .map((t) => t[now]);
-          const check = () => (timeline.units
-            .map((t, i) => updates[i][now])
-            .reduce((a, b) => (a * b)) === 1) //all updated
-            ? update()
-            : true;
-          const updates = timeline.units
-            .map((t) => T().wrap(check));
-          const dummy0 = timeline.units
-            .map((t, i) => t.wrap(() => updates[i][now] = 1));
-          const dummy1 = timeline.wrap(reset);
-          timeline[now] = null; //initial reset
-        });
-        return t01; //  T(t0)(t1)
-      };
+      const t0 = t1 => (t1.identity) //T
+        ? t0
+        : (() => {
+          const t01 = T((timeline) => { //construct binded TL event
+            timeline.units = (t0.units)
+              ? t0.units.concat(t1)
+              : [t0, t1];
+            const reset = () => timeline.units
+              .map((t, i) => updates[i][now] = 0);
+            const update = () => timeline[now] = timeline.units
+              .map((t) => t[now]);
+            const check = () => (timeline.units
+              .map((t, i) => updates[i][now])
+              .reduce((a, b) => (a * b)) === 1) //all updated
+              ? update()
+              : true;
+            const updates = timeline.units
+              .map((t) => T().wrap(check));
+            const dummy0 = timeline.units
+              .map((t, i) => t.wrap(() => updates[i][now] = 1));
+            const dummy1 = timeline.wrap(reset);
+            timeline[now] = null; //initial reset
+          });
+          return t01; //  T(t0)(t1)
+        })();
       Object.defineProperties(t0, //detect TL update
         {
           now: { //a[now]
@@ -59,7 +61,7 @@
         : true;
       return t0;
     })();
-  T.val = t => t;
+  T.identity = true;
   //------------------
   if (typeof module !== "undefined" && module.exports) {
     module.exports = T;

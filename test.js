@@ -19,12 +19,10 @@
     })()
     : err();
 
-  const mlog = (msg) => (m) => (typeof m !== FUNCTION)
-    ? (() => {
-      console.log(msg + ": " + m);
-      return m;
-    })()
-    : err();
+  const mlog = (msg) => (m) => {
+    console.log(msg + ": " + m);
+    return m;
+  };
 
   // return a type checked function
   const type = s => f => x => (typeof x == s)
@@ -33,8 +31,35 @@
 
   const tLog = T();
   tLog.wrap(log);
-  tLog[now] = "----------------";
 
+  const tLog2 = T();
+  tLog2
+    .wrap(log)
+    .wrap(log);
+  tLog2[now] = "----------------";
+
+  (() => {
+    console.log(
+      T
+    );
+    console.log(
+      T(T)
+    );
+    tLog[now] = "----------------";
+    const a = T();
+    a[now] = 123;
+    console.log(
+      T(a)
+    );
+    console.log(
+      a
+    );
+    console.log(
+      a(T)
+    );
+  })();
+
+  tLog[now] = "----------------";
   const sec1 = T((timeline) => {
     setTimeout(() => {
       timeline[now] = "yay!! after 1 sec";
