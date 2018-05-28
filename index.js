@@ -11,18 +11,19 @@
             : [t0, t1];
           const reset = () => timeline.units
             .map((t, i) => updates[i][now] = 0);
+          const update = () => timeline[now] = timeline.units
+            .map((t) => t[now]);
           const check = () => (timeline.units
             .map((t, i) => updates[i][now])
             .reduce((a, b) => (a * b)) === 1) //all updated
-            ? (() => timeline[now] = timeline.units
-              .map((t) => t[now]))()
+            ? update()
             : true;
           const updates = timeline.units
             .map((t) => T().wrap(check));
           const dummy0 = timeline.units
             .map((t, i) => t.wrap(() => updates[i][now] = 1));
           const dummy1 = timeline.wrap(reset);
-          timeline[now] = null;
+          timeline[now] = null; //initial reset
         });
         return t01; //  T(t0)(t1)
       };
