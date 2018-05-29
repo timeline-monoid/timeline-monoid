@@ -85,7 +85,7 @@
       .sync(a => a * 2)
       .wrap(console.log);
 
-    const c = T(a)(b)
+    const c = (a)(b)
       .sync(([a, b]) => a + b)
       .wrap(console.log);
 
@@ -94,23 +94,13 @@
   tLog[now] = "----------------";
   (() => {
     const a = T();
-
-    const b = a
-      .sync(a => a * 2);
-
-    const c = T(a)(b)
-      .sync(([a, b]) => a + b);
-
-    const abc = T(a)(b)(c)
-      .wrap(console.log);
+    const b = a.sync(a => a * 2);
+    const c = (a)(b).sync(([a, b]) => a + b);
+    const abc = (a)(b)(c).wrap(console.log);
 
     a[now] = 1;
     a[now] = 5;
   })();
-
-
-
-
 
   tLog[now] = "----------------";
 
@@ -157,20 +147,15 @@
 
 
   (() => {
-    const a = T();
-    const b = T();
-    const c = T();
+    const a = T().wrap(mlog("a"));
+    const b = T().wrap(mlog("b"));
+    const c = T().wrap(mlog("c"));
+    const abc = (a)(b)(c).wrap(mlog("abc"));
 
-    const abc = T(a)(b)(c);
-
-    a.wrap(mlog("a"));
-    b.wrap(mlog("b"));
-    c.wrap(mlog("c"));
-    abc.wrap(mlog("abc"));
 
     a[now] = 23;
     b[now] = 3;
-    b[now] = 0;
+    b[now] = 0; //double update
     c[now] = 123;
     tLog[now] = "----------------";
     a[now] = 77;
@@ -178,38 +163,7 @@
     b[now] = 88;
   })();
   tLog[now] = "----------------";
-  (() => {
-    const a = T();
-    const b = T(timeline => {
-      a.wrap(a => {
-        timeline[now] = a * 2;
-      })
-    });
 
-    a.wrap(mlog("a"));
-    b.wrap(mlog("b"));
-
-    a[now] = 1;
-  })();
-
-  tLog[now] = "----------------";
-
-  (() => {
-    const a = T();
-    const b = a.sync(a => a * 2);
-    const c = T(a)(b).sync(([a, b]) => a + b);
-    const abc = T(a)(b)(c);
-
-    a.wrap(mlog("a"));
-    b.wrap(mlog("b"));
-    c.wrap(mlog("c"));
-    abc.wrap(mlog("abc"));
-
-    a[now] = 1;
-    tLog[now] = "----------------";
-    a[now] = 7;
-  })();
-  tLog[now] = "----------------";
 
 //============================
 })();

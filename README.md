@@ -192,18 +192,12 @@ The nature of left identity: `T(a) = a`   is especially important because we sho
 
 ### associative of `timeline`
 
-Now, to satisfy associative law,
+`timeline` satisfies associative law.
 
 ```sh
-a(b)(c)
-= a(b(c))
-```
-Since  `T(a) = a`,`T(b) = b`, `T(c) = c`
-
-```sh
-T(a)(b)(c)
-= T(a)(b)(T(c))
-= T(a)(T(b)(c))
+(a)(b)(c)
+= ((a)(b))(c)
+= (a)((b)(c))
 ```
 
 ## Timeline composition
@@ -220,18 +214,18 @@ Now we have 2 equations:
 These equations can be easily implemented to a `timeline` code:
 
 ```js
-    const a = T()
-      .wrap(console.log);
+const a = T()
+  .wrap(console.log);
 
-    const b = a
-      .sync(a => a * 2)  // 2 = 1 * 2
-      .wrap(console.log);
+const b = a
+  .sync(a => a * 2)
+  .wrap(console.log);
 
-    const c = T(a)(b)
-      .sync(([a, b]) => a + b)  // 3 = 1 + 2
-      .wrap(console.log);
+const c = (a)(b)
+  .sync(([a, b]) => a + b)
+  .wrap(console.log);
 
-    a[now] = 1;
+a[now] = 1;
 ```
 
 ```sh
@@ -243,16 +237,13 @@ These equations can be easily implemented to a `timeline` code:
 If we need a synchronized update of all of `a`,`b`,`c` which is an atomic update of `[a,b,c]`,
 
 ```js
-    const a = T();
-    const b = a
-      .sync(a => a * 2);
-    const c = T(a)(b)
-      .sync(([a, b]) => a + b);
-    const abc = T(a)(b)(c)
-      .wrap(console.log);
+const a = T();
+const b = a.sync(a => a * 2);
+const c = (a)(b).sync(([a, b]) => a + b);
+const abc = (a)(b)(c).wrap(console.log);
 
-    a[now] = 1;
-    a[now] = 5;
+a[now] = 1;
+a[now] = 5;
 ```
 
 ```sh
@@ -310,7 +301,7 @@ Obviously, the "custom" `timelilne` can be composed.
 ```
 
 ```js
-  const sec1and3 = sec1(sec3)
+  const sec1and3 = (sec1)(sec3)
     .wrap(console.log);
 ```
 
