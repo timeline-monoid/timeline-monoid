@@ -93,16 +93,13 @@
   })();
   tLog[now] = "----------------";
   (() => {
-    const a = T()
-      .wrap(console.log);
+    const a = T();
 
     const b = a
-      .sync(a => a * 2)
-      .wrap(console.log);
+      .sync(a => a * 2);
 
     const c = T(a)(b)
-      .sync(([a, b]) => a + b)
-      .wrap(console.log);
+      .sync(([a, b]) => a + b);
 
     const abc = T(a)(b)(c)
       .wrap(console.log);

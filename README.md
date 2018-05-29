@@ -1,4 +1,5 @@
 
+
 # Timeline Monoid
 
 npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)
@@ -57,7 +58,7 @@ Frozen Block Universe and Human Consciousness
     console.log(a[now]);
 ```
 
-```
+```sh
 1
 ```
 
@@ -80,7 +81,7 @@ Frozen Block Universe and Human Consciousness
     a[now] = 5;
 ```
 
-```
+```sh
 1
 5
 ```
@@ -95,7 +96,7 @@ As `timeline.wrap` is functor:
     a[now] = 1;
 ```
 
-```
+```sh
 1
 1
 ```
@@ -120,7 +121,7 @@ Now we have an equation: `b = a * 2`,
     a[now] = 5;
 ```
 
-```
+```sh
 1
 2
 5
@@ -138,21 +139,21 @@ In algebra,
 
 `0` is an identiy element in +(addition) operation,
 
-```
+```sh
     a + 0 = a  //right identity
     0 + a = a  //left identity
 ```
 
 `1` is an identity element in *(multiplication) operation,
 
-```
+```sh
     a ∗ 1 = a  //right identity
     1 ∗ a = a  //left identity
 ```
 
 Associative property
 
- ```
+ ```sh
     1 + 2 + 3 = 1 + 2 + 3
     (1+2) + 3 = 1 + (2+3)
         3 + 3 = 1 + 5
@@ -164,9 +165,11 @@ A string is also a monoid
 
 `string + string => string`
 
+```sh
     "Hello" + " " + "world"
     = "Hello " + "world"
     = "Hello" + " world"
+```
 
 appears to be associative, and identity element is `""`.
 
@@ -174,13 +177,13 @@ appears to be associative, and identity element is `""`.
 
 The identity element of `timeline`  is `T`:
 
-```
+```sh
 T
 =T(T)
 =T(T(T))
 ...
 ```
-```
+```sh
 T(a) = a = a(T)
 ```
 The nature of left identity: `T(a) = a`   is especially important because we should intuitively be aware of that an instance of `timeline` for a given `timeline` instance is identical.
@@ -188,12 +191,14 @@ The nature of left identity: `T(a) = a`   is especially important because we sho
 ### associative of `timeline`
 
 Now, to satisfy associative law,
-```
+
+```sh
 a(b)(c)
 = a(b(c))
 ```
 Since  `T(a) = a`,`T(b) = b`, `T(c) = c`
-```
+
+```sh
 T(a)(b)(c)
 = T(a)(b)(T(c))
 = T(a)(T(b)(c))
@@ -203,10 +208,14 @@ T(a)(b)(c)
 
 Here we can compose `timeline`s.
 
-Now we have an equation:
-`b = a * 2`
-`c = a + b`
+Now we have 2 equations:
 
+```sh
+   b = a * 2
+   c = a + b
+```
+
+These equations can be easily implemented to a `timeline` code:
 
 ```js
     const a = T()
@@ -223,7 +232,7 @@ Now we have an equation:
     a[now] = 1;
 ```
 
-```
+```sh
 1
 2
 3
@@ -232,17 +241,11 @@ Now we have an equation:
 If we need a synchronized update of all of `a`,`b`,`c` which is an atomic update of `[a,b,c]`,
 
 ```js
-    const a = T()
-      .wrap(console.log);
-
+    const a = T();
     const b = a
-      .sync(a => a * 2)
-      .wrap(console.log);
-
+      .sync(a => a * 2);
     const c = T(a)(b)
-      .sync(([a, b]) => a + b)
-      .wrap(console.log);
-
+      .sync(([a, b]) => a + b);
     const abc = T(a)(b)(c)
       .wrap(console.log);
 
@@ -250,14 +253,8 @@ If we need a synchronized update of all of `a`,`b`,`c` which is an atomic update
     a[now] = 5;
 ```
 
-```
-1
-2
-3
+```sh
 [ 1, 2, 3 ]
-5
-10
-15
 [ 5, 10, 15 ]
 ```
 
@@ -295,9 +292,10 @@ They can be IO inputs or simply a timer event,
     }, 1000);
   }).wrap(console.log);
 ```
-```
+
+```sh
 yay!! after 1 sec
-````
+```
 
 Obviously, the "custom" `timelilne` can be composed.
 
@@ -314,7 +312,7 @@ Obviously, the "custom" `timelilne` can be composed.
     .wrap(console.log);
 ```
 
-```
+```sh
 [ 'yay!! after 1 sec', 'yay!! after 3 sec' ]
 ```
 
