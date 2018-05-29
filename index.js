@@ -8,9 +8,11 @@
         ? t0
         : (() => {
           const t01 = T((timeline) => { //construct binded TL event
-            timeline.units = (t0.units)
-              ? t0.units.concat(t1)
-              : [t0, t1];
+            const t0units = (t0.units)
+              ? t0.units : [t0];
+            const t1units = (t1.units)
+              ? t1.units : [t1];
+            timeline.units = t0units.concat(t1units);
             const reset = () => timeline.units
               .map((t, i) => updates[i][now] = 0);
             const update = () => timeline[now] = timeline.units

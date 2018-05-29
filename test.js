@@ -97,9 +97,11 @@
     const b = a.sync(a => a * 2);
     const c = (a)(b).sync(([a, b]) => a + b);
     const abc = (a)(b)(c).wrap(console.log);
+    const abc2 = ((a)(b))(c).wrap(console.log);
+    const abc3 = (a)((b)(c)).wrap(console.log);
 
     a[now] = 1;
-    a[now] = 5;
+  //  a[now] = 5;
   })();
 
   tLog[now] = "----------------";
