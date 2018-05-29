@@ -1,6 +1,8 @@
 
 # Timeline Monoid
 
+npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)
+
 ## Background and Rationale
 [Functional Reactive Programming (FRP)](https://wiki.haskell.org/FRP) integrates **time flow** and compositional events into functional programming.
 
@@ -63,7 +65,7 @@ Frozen Block Universe and Human Consciousness
 
 `timeline`datatype is a [functor](https://en.wikipedia.org/wiki/Functor) (a datatype that methods/functions always return the identical datatype, such as [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)).
 
-`timeline` has 2 core mthods/functions, `wrap` and `sync`.
+`timeline` has 2 core methods/functions, `wrap` and `sync`.
 
 ### timeline.wrap
 
