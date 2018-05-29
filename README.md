@@ -4,6 +4,8 @@
 
 npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)
 
+#### A minimal implementation for monoidal FRP datatype
+
 ## Background and Rationale
 [Functional Reactive Programming (FRP)](https://wiki.haskell.org/FRP) integrates **time flow** and compositional events into functional programming.
 
