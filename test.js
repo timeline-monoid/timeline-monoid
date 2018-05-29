@@ -66,7 +66,6 @@
   })();
   tLog[now] = "----------------";
 
-
   (() => {
     const a = T()
       .wrap(console.log);
@@ -91,6 +90,8 @@
 
     a[now] = 1;
   })();
+
+
   tLog[now] = "----------------";
   (() => {
     const a = T();
@@ -146,8 +147,6 @@
     .and(sec3)
     .wrap(console.log); // == T(sec1)(sec3) == sec(sec3)
 
-
-
   (() => {
     const a = T().wrap(mlog("a"));
     const b = T().wrap(mlog("b"));
@@ -165,7 +164,6 @@
     b[now] = 88;
   })();
   tLog[now] = "----------------";
-
 
 //============================
 })();
