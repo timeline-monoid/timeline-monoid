@@ -23,7 +23,7 @@ The basic idea is that **a time-varying value can be represented as a function o
 
 >We began this chapter with the goal of building computational models whose structure matches our perception of the real world we are trying to model. We can model the world as a collection of separate, time-bound, interacting objects with state, or **we can model the world as a single, timeless, stateless unity**. Each view has powerful advantages, but neither view alone is completely satisfactory. A grand unification has yet to emerge.
 
-Our world is modeled as an immutable, timeless, stateless unity from perspective of physics
+Our world is modeled as an immutable, timeless, stateless unity from the perspective of physics
 
 ![](https://upload.wikimedia.org/wikipedia/commons/6/6f/CMB_Timeline300_no_WMAP.jpg)
 
@@ -31,13 +31,13 @@ Frozen Block Universe and Human Consciousness
 
 ![](https://github.com/kenokabe/00img/wiki/block-universe.jpg)
 
-[Conal Elliott(a developer who has contributed to early FRP) expaines](https://stackoverflow.com/questions/1028250/what-is-functional-reactive-programming)
+[Conal Elliott(a developer who has contributed to early FRP) explaines](https://stackoverflow.com/questions/1028250/what-is-functional-reactive-programming)
 >FRP is about "datatypes that represent a value **over time** ".
 >Conventional imperative programming captures these dynamic values only indirectly, through state and mutations. The complete history (past, present, future) has no first class representation. Moreover, only *discretely evolving* values can be (indirectly) captured, since the imperative paradigm is temporally discrete.
 > In contrast, FRP captures these evolving values *directly* and has no difficulty with *continuously* evolving values.
 >Dynamic/evolving values (i.e., values "over time") are first class values in themselves. You can define them and combine them, pass them into & out of functions.
 
-## `timeline` as a datatype that represents a first class value over time /  a stream (infinite sequence) in JavaScript
+## `timeline` as a datatype that represents a first-class value over time /  a stream (infinite sequence) in JavaScript
 
  `timeline` : a datatype that represents **a first class value over time** in JavaScript /  a stream (infinite sequence) / time function as a stream / *world line in space-time*.
 
@@ -50,7 +50,7 @@ Frozen Block Universe and Human Consciousness
 
 ### timeline [now]
 
- As `timeline` is infinite stream of time, `timeline` has a (a user's perspective) current value: `timeline[now]`, and can be easily get/set as below:
+ As `timeline` is an infinite stream of time, `timeline` has a (a user's perspective) current value: `timeline[now]`, and can be easily get/set as below:
 
 ```js
     a[now] = 1;
@@ -102,7 +102,7 @@ As `timeline.wrap` is functor:
 
 ### timeline.sync
 
-`timeline.sync` returns a new`timeline` instance that a given are function appllied to on every update of `timeline[now]`.
+`timeline.sync` returns a new `timeline` instance that a given are function applied to on every update of `timeline[now]`.
 
 It corresponds to `Array.map`, but on TimeLine.
 
@@ -143,7 +143,7 @@ In algebra,
     0 + a = a  //left identity
 ```
 
-`1` is an identiy element in *(multiplication) oeration,
+`1` is an identity element in *(multiplication) operation,
 
 ```
     a ∗ 1 = a  //right identity
@@ -159,7 +159,7 @@ Associative property
             6 = 6
 ```
 
-String is also a monoid
+A string is also a monoid
 
 
 `string + string => string`
@@ -168,11 +168,11 @@ String is also a monoid
     = "Hello " + "world"
     = "Hello" + " world"
 
-appears to be associative, and identy element is `""`.
+appears to be associative, and identity element is `""`.
 
 ### identiy of `timeline`
 
-The identity element of`timeline` is `T`:
+The identity element of `timeline`  is `T`:
 
 ```
 T
@@ -183,7 +183,7 @@ T
 ```
 T(a) = a = a(T)
 ```
-The nature of left identiy: `T(a) = a`   is especially important because we should intuitively be aware of that an instance of `timeline` for a given `timeline` instance is identical.
+The nature of left identity: `T(a) = a`   is especially important because we should intuitively be aware of that an instance of `timeline` for a given `timeline` instance is identical.
 
 ### associative of `timeline`
 
@@ -273,12 +273,12 @@ When we define a `timeline` with an empty argument:
  ```
 is it really an empty `timeline`?
 
-The fact is it is not empty because actually, we occationally "manually" update the `timeline` value as
+The fact is it is not empty because actually, we occasionally "manually" update the `timeline` value as
 
 ```js
     a[now] = 1;
  ```
-Nevertheless the argument of`timeline` in empty, various inputs would happen to the `timeline`. In a sense, implicitly, our real-world events or time function of the world:`f(t)` are encapsulated to it.
+The argument of `timeline` in empty, Nevertheless, various inputs would happen to the `timeline`. In a sense, implicitly, our real-world events or time function of the world: `f(t)` are encapsulated to it.
 
 ```js
     const a = T(realWorldTimeFunction);
