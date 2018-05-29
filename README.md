@@ -45,9 +45,11 @@ Frozen Block Universe and Human Consciousness
 ```js
     const a = T();
 ```
- As `timeline` is infinite stream of time, `timeline` has a (a user's perspective) current value: `timeline[now]`, and can be easily get/set as below:
 
 ### timeline [now]
+
+ As `timeline` is infinite stream of time, `timeline` has a (a user's perspective) current value: `timeline[now]`, and can be easily get/set as below:
+
 ```js
     a[now] = 1;
     console.log(a[now]);
