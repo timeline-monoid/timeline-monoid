@@ -105,7 +105,7 @@ As `timeline.wrap` is functor:
 
 ### timeline.sync
 
-`timeline.sync` returns a new `timeline` instance that a given are function applied to on every update of `timeline[now]`.
+`timeline.sync` returns a new `timeline` instance that a given function applied to on every update of `timeline[now]`.
 
 It corresponds to `Array.map`, but on TimeLine.
 
@@ -251,7 +251,7 @@ a[now] = 5;
 [ 5, 10, 15 ]
 ```
 
-The values of `a`,`b`,`c` are now are guaranteed to synchronize with satisfying the equation.
+The values of `a`,`b`,`c` are now guaranteed to synchronize with satisfying the equation.
 
 In a practical program, in this manner, we can define dependencies of events, IO, etc., and `timeline` is a complete alternative of [State Monad](https://en.wikibooks.org/wiki/Haskell/Understanding_monads/State) or Continuation Monad such as [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) simply because there is "no state"  as discussed earlier.
 
