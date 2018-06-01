@@ -1,14 +1,10 @@
 (() => {
   "use strict";
   //=========================
-  const T = require("./index");
+  const {T, now} = require("./index");
 
   const FUNCTION = 'function';
   const NUMBER = "number";
-
-  const now = "now";
-
-
   const err = () => {
     throw new TypeError();
   };
@@ -38,6 +34,31 @@
     .wrap(log)
     .wrap(log);
   tLog2[now] = "----------------";
+
+  tLog[now] = "---identity-------------";
+  (() => {
+    console.log(
+      T
+    );
+    console.log(
+      (T)(T)
+    );
+    tLog[now] = "----------------";
+    tLog[now] = "(T)(a) = (a) = (a)(T)";
+    const a = T();
+    a[now] = 123;
+    console.log(
+      (T)(a)
+    );
+    console.log(
+      (a)
+    );
+    console.log(
+      (a)(T)
+    );
+  })();
+
+  tLog[now] = "----------------";
 
 
   (() => {
@@ -95,7 +116,7 @@
   tLog[now] = "----------------";
   (() => {
     const a = T();
-    const b = a.sync(a => a * 2);
+    const b = (a).sync(a => a * 2);
     const c = (a)(b).sync(([a, b]) => a + b);
     const abc = (a)(b)(c).wrap(console.log);
     const abc2 = ((a)(b))(c).wrap(console.log);
@@ -105,28 +126,6 @@
   //  a[now] = 5;
   })();
 
-  tLog[now] = "----------------";
-
-  (() => {
-    console.log(
-      T
-    );
-    console.log(
-      T(T)
-    );
-    tLog[now] = "----------------";
-    const a = T();
-    a[now] = 123;
-    console.log(
-      T(a)
-    );
-    console.log(
-      a
-    );
-    console.log(
-      a(T)
-    );
-  })();
 
   tLog[now] = "----------------";
   const sec1 = T((timeline) => {
@@ -153,11 +152,10 @@
     const c = T().wrap(mlog("c"));
     const abc = (a)(b)(c).wrap(mlog("abc"));
 
-
-    a[now] = 23;
-    b[now] = 3;
-    b[now] = 0; //double update
-    c[now] = 123;
+    a[now] = 1;
+    b[now] = 2; //double update
+    b[now] = 999; //double update
+    c[now] = 3;
     tLog[now] = "----------------";
     a[now] = 77;
     c[now] = 99;

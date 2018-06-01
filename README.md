@@ -1,5 +1,4 @@
 
-
 # Timeline Monoid
 
 npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)

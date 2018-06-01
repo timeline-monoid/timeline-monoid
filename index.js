@@ -65,10 +65,14 @@
     })();
   T.identity = true;
   //------------------
-  if (typeof module !== "undefined" && module.exports) {
-    module.exports = T;
-  } else {
-    window.T = T;
-  }
+  const timeline = {
+    now: now,
+    T: T
+  };
+  //------------------
+  const exporting = (typeof module === 'object'
+  && typeof module.exports === 'object')
+    ? module.exports = timeline
+    : self.timeline = timeline;
 //============================
 })();
