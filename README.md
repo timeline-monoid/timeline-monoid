@@ -3,7 +3,84 @@
 
 npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)
 
-#### A minimal implementation for monoidal FRP datatype
+## A minimal implementation for monoidal Timeline (FRP) datatype
+
+## Installation
+
+```sh
+$ npm install timeline-monoid
+```
+
+## Usage
+
+```js
+  const {T, now} = require("timeline-monoid");
+```
+
+### Equations
+
+```sh
+   b = a * 2
+   c = a + b
+
+   a = 1
+
+or a = 5
+
+   a,b,c ?
+```
+
+#### The code
+
+```js
+  const a = T();
+  const b = (a).sync(a => a * 2);
+  const c = (a)(b).sync(([a, b]) => a + b);
+  const abc = (a)(b)(c)
+    .wrap(console.log);
+
+  a[now] = 1;
+  a[now] = 5;
+```
+
+#### The answer
+
+```js
+[ 1, 2, 3 ]
+[ 5, 10, 15 ]
+```
+
+### Asynchronous programming
+
+Any *time functions* which is generally called *"events"* or "*asynchronous events"* are encapsulated to `timeline` instance, and they are composed to another `timeline` instance.
+
+
+```js
+    const fs = require('fs');
+
+    const timelineA = T( // Event encapsulation
+      (timeline) => {
+        fs.readFile('package.json', 'utf8', (err, data) => {
+          timeline[now] = data;
+        });
+      });
+    const timelineB = T( // Event encapsulation
+      (timeline) => {
+        fs.readFile('index.js', 'utf8', (err, data) => {
+          timeline[now] = data;
+        });
+      });
+
+    const todo = ([a, b]) => {
+      console.log("Files A and B are now ready");
+      console.log(a); //show file contents
+      console.log(b);
+    };
+
+    const timelineAB = (timelineA)(timelineB) // Event Composition
+      .wrap(todo);
+```
+
 
 ## Background and Rationale
 [Functional Reactive Programming (FRP)](https://wiki.haskell.org/FRP) integrates **time flow** and compositional events into functional programming.
@@ -205,10 +282,7 @@ Here we can compose `timeline`s.
 
 Now we have 2 equations:
 
-```sh
-   b = a * 2
-   c = a + b
-```
+
 
 These equations can be easily implemented to a `timeline` code:
 
