@@ -1,9 +1,9 @@
 
 # Timeline Monoid
 
-npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)
+#### npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)
 
-## A minimal implementation for monoidal Timeline (FRP) datatype
+### A minimal implementation for monoidal Timeline (FRP) datatype
 
 ## Installation
 
@@ -56,17 +56,17 @@ Any *time functions* which is generally called *"events"* or "*asynchronous even
 
 
 ```js
-    const fs = require('fs');
+    const fs = require("fs");
 
     const timelineA = T( // Event encapsulation
       (timeline) => {
-        fs.readFile('package.json', 'utf8', (err, data) => {
+        fs.readFile("package.json", "utf8", (err, data) => {
           timeline[now] = data;
         });
       });
     const timelineB = T( // Event encapsulation
       (timeline) => {
-        fs.readFile('index.js', 'utf8', (err, data) => {
+        fs.readFile("index.js", "utf8", (err, data) => {
           timeline[now] = data;
         });
       });
@@ -457,11 +457,15 @@ To build up this library, `timeline` itself is extensively used.
     })();
   T.identity = true;
   //------------------
-  if (typeof module !== "undefined" && module.exports) {
-    module.exports = T;
-  } else {
-    window.T = T;
-  }
+  const timeline = {
+    now: now,
+    T: T
+  };
+  //------------------
+  const exporting = (typeof module === 'object'
+  && typeof module.exports === 'object')
+    ? module.exports = timeline
+    : self.timeline = timeline;
 //============================
 })();
 ```
