@@ -1,4 +1,5 @@
 
+
 # Timeline Monoid
 
 #### npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)
@@ -251,9 +252,10 @@ A string is also a monoid
 
 appears to be associative, and identity element is `""`.
 
+
 ### identiy of `timeline`
 
-The identity element of `timeline`  is `T`:
+timeline` is a monoid, and the identity element of `timeline` is `T`:
 
 ```sh
 T
@@ -263,12 +265,27 @@ T
 ```
 ```sh
 T(a) = a = a(T)
+
+(T)(a) = (a) = (a)(T)
 ```
 The nature of left identity: `T(a) = a`   is especially important because we should intuitively be aware of that an instance of `timeline` for a given `timeline` instance is identical.
 
+### `timeline` composition
+
+`timeline` is a monoid, and composable:
+
+```js
+const a = T();
+const b = T();
+const ab = (a)(b); // ab is another `timeline` composed of a and b
+
+const c = T();
+const abc = (ab)(c); //  == (a)(b)(c)
+```
+
 ### associative of `timeline`
 
-`timeline` satisfies associative law.
+`timeline` is a monoid, and satisfies associative law:
 
 ```sh
 (a)(b)(c)
@@ -282,7 +299,10 @@ Here we can compose `timeline`s.
 
 Now we have 2 equations:
 
-
+```sh
+   b = a * 2
+   c = a + b
+```
 
 These equations can be easily implemented to a `timeline` code:
 
