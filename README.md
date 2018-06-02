@@ -291,14 +291,8 @@ appears to be associative, and identity element is `""`.
 
 ### identiy of `timeline`
 
-timeline` is a monoid, and the identity element of `timeline` is `T`:
+`timeline` is a monoid, and the identity element of `timeline` is `T` or `(T)`:
 
-```sh
-T
-=T(T)
-=T(T(T))
-...
-```
 ```sh
 T(a) = a = a(T)
 
