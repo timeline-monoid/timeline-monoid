@@ -1,5 +1,6 @@
 
 
+
 # Timeline Monoid
 
 #### npm package: [https://www.npmjs.com/package/timeline-monoid](https://www.npmjs.com/package/timeline-monoid)
@@ -57,29 +58,64 @@ Any *time functions* which is generally called *"events"* or "*asynchronous even
 
 
 ```js
-    const fs = require("fs");
+const fs = require("fs");
 
-    const timelineA = T( // Event encapsulation
-      (timeline) => {
-        fs.readFile("package.json", "utf8", (err, data) => {
-          timeline[now] = data;
-        });
-      });
-    const timelineB = T( // Event encapsulation
-      (timeline) => {
-        fs.readFile("index.js", "utf8", (err, data) => {
-          timeline[now] = data;
-        });
-      });
+const timelineA = T((timeline) => { // Event encapsulation
+  fs.readFile("package.json", "utf8", (err, data) => {
+    timeline[now] = data;
+  });
+});
+const timelineB = T((timeline) => { // Event encapsulation
+  fs.readFile("index.js", "utf8", (err, data) => {
+    timeline[now] = data;
+  });
+});
 
-    const todo = ([a, b]) => {
-      console.log("Files A and B are now ready");
-      console.log(a); //show file contents
-      console.log(b);
+const todo = ([a, b]) => {
+  console.log("Files A and B are now ready");
+  console.log(a); //show file contents
+  console.log(b);
+};
+
+const timelineAB = (timelineA)(timelineB) // Event Composition
+  .wrap(todo);
+```
+
+
+### Simple Mouse Draw on Canvas
+
+```html
+<canvas id="canvas1" width="900" height="500"></canvas>
+```
+
+```js
+    const canvas = document.getElementById('canvas1');
+    const ctx = canvas.getContext('2d');
+    const draw = ([x0, y0], [x1, y1]) => {
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x1, y1);
+      ctx.closePath();
+      ctx.stroke();
     };
 
-    const timelineAB = (timelineA)(timelineB) // Event Composition
-      .wrap(todo);
+    const btnTimeline = T((timeline) => {
+      canvas.onmousedown = (e) => timeline[now] = 1;
+      canvas.onmouseup = (e) => timeline[now] = 0;
+    });
+
+    const pointTimeline = T((timeline) => {
+      canvas.onmousemove = (e) => timeline[now] = [e.clientX, e.clientY];
+    })
+      .wrap((point) => (btnTimeline[now] === 1)
+        ? draw(lastPointTimeline[now], point)
+        : true);
+
+    const lastPointTimeline = T((timeline) => {
+      pointTimeline.wrap(point => {
+        timeline[now] = point;
+      });
+    });
 ```
 
 
