@@ -442,70 +442,83 @@ To build up this library, `timeline` itself is extensively used.
 ```js
 (() => {
   "use strict";
-  const now = "now";
-  const T = (t = []) => (t.wrapF || t.identity)
-    ? t
-    : (() => {
-      const t0 = t1 => (t1.identity) //T
-        ? t0
-        : (() => {
-          const t01 = T((timeline) => { //construct binded TL event
-            const t0units = (t0.units)
-              ? t0.units : [t0];
-            const t1units = (t1.units)
-              ? t1.units : [t1];
-            timeline.units = t0units.concat(t1units);
-            const reset = () => timeline.units
-              .map((t, i) => updates[i][now] = 0);
-            const update = () => timeline[now] = timeline.units
-              .map((t) => t[now]);
-            const check = () => (timeline.units
-              .map((t, i) => updates[i][now])
-              .reduce((a, b) => (a * b)) === 1) //all updated
-              ? update()
-              : true;
-            const updates = timeline.units
-              .map((t) => T().wrap(check));
-            const dummy0 = timeline.units
-              .map((t, i) => t.wrap(() => updates[i][now] = 1));
-            const dummy1 = timeline.wrap(reset);
-            timeline[now] = null; //initial reset
-          });
-          return t01; //  T(t0)(t1)
-        })();
-      Object.defineProperties(t0, //detect TL update
-        {
-          now: { //a[now]
-            get() {
-              return t0.val;
-            },
-            set(tUpdate) {
-              return (() => {
-                t0.val = tUpdate;
-                t0.wrapF.map(f => f(tUpdate));
-              })();
-            }
+  const freeMonoid = (operator) => (() => {
+    const M = (m = []) => (m.monoid || m.identity)
+      ? m
+      : (() => {
+        const a = b => (b.identity) //M
+          ? (a)
+          : !(b.monoid)
+            ? (a)(M(b))
+            : (() => {
+              const ab = M();
+              ab.units = a.units.concat(b.units);
+              return ab; // (a)(b)
+            })();
+        a.monoid = true;
+        a.val = m;
+        a.units = [a];
+        a.M = (m) => M(m);
+        operator(a);
+        return a;
+      })();
+    M.identity = true;
+    return M;
+  })();
+  //Timeline monoid on freeMonoid =============
+  const operator = (timeline) => {
+    Object.defineProperties(timeline, //detect TL update
+      {
+        now: { //timeline[now]
+          get() {
+            return timeline.val;
+          },
+          set(tUpdate) {
+            return (() => {
+              timeline.val = tUpdate;
+              timeline._wrapF.map(f => f(tUpdate));
+            })();
           }
-        });
-      t0.wrapF = [];
-      t0.wrap = f => {
-        t0.wrapF[t0.wrapF.length] = f;
-        return t0;
-      };
-      t0.sync = f => T(t => t0.wrap(a => t[now] = f(a)));
-      t0.and = t1 => T(t0)(t1); //  === t0(t1)
-      t0.or = t1 => T(
-        t01 => {
-          t0.wrap(t => t01[now] = t);
-          t1.wrap(t => t01[now] = t);
-        });
-      //------------------
-      (typeof t === "function") //wrapped eventF
-        ? t(t0)
-        : true;
-      return t0;
-    })();
-  T.identity = true;
+        }
+      });
+    timeline._wrapF = [];
+    timeline._wrap = f => {
+      timeline._wrapF[timeline._wrapF.length] = f;
+      return timeline;
+    };
+    timeline._sync = f => timeline.M(timeline99 => timeline
+      ._wrap(x => (timeline99[now] = f(x))));
+    timeline.wrap = f => timeline.eval()._wrap(f);
+    timeline.sync = f => timeline.eval()._sync(f);
+    timeline.eval = () => (timeline.evaluated)
+    || (timeline.units.length === 1)
+      ? timeline
+      : (() => {
+        timeline.evaluated = true;
+        const reset = () => timeline.units
+          .map((t, i) => updates[i][now] = 0);
+        const update = () => timeline[now] = timeline.units
+          .map((t) => t[now]);
+        const check = () => (timeline.units
+          .map((t, i) => updates[i][now])
+          .reduce((a, b) => (a * b)) === 1) //all updated
+          ? update()
+          : true;
+        const updates = timeline.units
+          .map((t) => timeline.M()._wrap(check));
+        const dummy0 = timeline.units
+          .map((t, i) => t._wrap(() => updates[i][now] = 1));
+        const dummy1 = timeline._wrap(reset);
+        timeline[now] = null; //initial reset
+        return timeline;
+      })();
+    //------------------
+    (typeof timeline.val === "function") //_wrapped eventF
+      ? timeline.val(timeline)
+      : true;
+  }; //-------operator
+  const now = "now";
+  const T = freeMonoid(operator);
   //------------------
   const timeline = {
     now: now,
@@ -518,6 +531,7 @@ To build up this library, `timeline` itself is extensively used.
     : self.timeline = timeline;
 //============================
 })();
+
 ```
 
 

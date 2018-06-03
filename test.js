@@ -126,7 +126,6 @@
   //  a[now] = 5;
   })();
 
-
   tLog[now] = "----------------";
   const sec1 = T((timeline) => {
     setTimeout(() => {
@@ -140,10 +139,7 @@
     }, 3000);
   }).wrap(mlog("sec_3"));
 
-  const sec1or3 = sec1.or(sec3)
-    .wrap(mlog("sec_1_or_3"));
-  const sec1and3 = sec1
-    .and(sec3)
+  const sec1and3 = (sec1)(sec3)
     .wrap(console.log); // == T(sec1)(sec3) == sec(sec3)
 
   (() => {
