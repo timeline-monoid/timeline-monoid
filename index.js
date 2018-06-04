@@ -24,6 +24,8 @@
     return M;
   })();
   //Timeline monoid on freeMonoid =============
+  const now = "now";
+  const T = () => freeMonoid(operator);
   const operator = (timeline) => {
     Object.defineProperties(timeline, //detect TL update
       {
@@ -75,12 +77,11 @@
       ? timeline.val(timeline)
       : true;
   }; //-------operator
-  const now = "now";
-  const T = freeMonoid(operator);
+
   //------------------
   const timeline = {
     now: now,
-    T: T
+    T: T()
   };
   //------------------
   const exporting = (typeof module === 'object'
