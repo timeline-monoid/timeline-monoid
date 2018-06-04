@@ -442,7 +442,7 @@ To build up this library, `timeline` itself is extensively used.
 ```js
 (() => {
   "use strict";
-  const freeMonoid = (operator) => (() => {
+  const freeMonoid = (operator) => {
     const M = (m = []) => (m.monoid || m.identity)
       ? m
       : (() => {
@@ -464,10 +464,10 @@ To build up this library, `timeline` itself is extensively used.
       })();
     M.identity = true;
     return M;
-  })();
+  }
   //Timeline monoid on freeMonoid =============
   const now = "now";
-  const T = () => freeMonoid(operator);
+  const _T = () => freeMonoid(operator);
   const operator = (timeline) => {
     Object.defineProperties(timeline, //detect TL update
       {
@@ -519,11 +519,11 @@ To build up this library, `timeline` itself is extensively used.
       ? timeline.val(timeline)
       : true;
   }; //-------operator
-
+  const T = _T();
   //------------------
   const timeline = {
     now: now,
-    T: T()
+    T: T
   };
   //------------------
   const exporting = (typeof module === 'object'
@@ -532,6 +532,7 @@ To build up this library, `timeline` itself is extensively used.
     : self.timeline = timeline;
 //============================
 })();
+
 
 ```
 
