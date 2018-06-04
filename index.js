@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const freeMonoid = (operator) => (() => {
+  const freeMonoid = (operator) => {
     const M = (m = []) => (m.monoid || m.identity)
       ? m
       : (() => {
@@ -22,7 +22,7 @@
       })();
     M.identity = true;
     return M;
-  })();
+  }
   //Timeline monoid on freeMonoid =============
   const now = "now";
   const T = () => freeMonoid(operator);
