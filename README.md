@@ -464,7 +464,7 @@ To build up this library, `timeline` itself is extensively used.
       })();
     M.identity = true;
     return M;
-  }
+  };
   //Timeline monoid on freeMonoid =============
   const now = "now";
   const _T = () => freeMonoid(operator);
@@ -526,13 +526,12 @@ To build up this library, `timeline` itself is extensively used.
     T: T
   };
   //------------------
-  const exporting = (typeof module === 'object'
-  && typeof module.exports === 'object')
+  const exporting = (typeof module === "object"
+  && typeof module.exports === "object")
     ? module.exports = timeline
     : self.timeline = timeline;
 //============================
 })();
-
 
 ```
 

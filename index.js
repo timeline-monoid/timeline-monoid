@@ -22,7 +22,7 @@
       })();
     M.identity = true;
     return M;
-  }
+  };
   //Timeline monoid on freeMonoid =============
   const now = "now";
   const _T = () => freeMonoid(operator);
@@ -84,8 +84,8 @@
     T: T
   };
   //------------------
-  const exporting = (typeof module === 'object'
-  && typeof module.exports === 'object')
+  const exporting = (typeof module === "object"
+  && typeof module.exports === "object")
     ? module.exports = timeline
     : self.timeline = timeline;
 //============================

@@ -1,6 +1,6 @@
 {
   "name": "timeline-monoid",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Monoidal Functional Reactive Programming in JavaScript",
   "main": "index.js",
   "scripts": {
@@ -11,22 +11,25 @@
     "url": "git+https://github.com/timeline-monoid/timeline-monoid.git"
   },
   "keywords": [
-  "monad",
-  "monads",
-  "monoid",
-  "monoidal",
-  "functional",
-  "time",
-  "FRP",
-  "reactive",
-  "observable",
-  "asynchronous",
-  "async"
-],
+    "monad",
+    "monads",
+    "monoid",
+    "monoidal",
+    "functional",
+    "time",
+    "FRP",
+    "reactive",
+    "observable",
+    "asynchronous",
+    "async"
+  ],
   "author": "Ken OKABE",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/timeline-monoid/timeline-monoid/issues"
   },
-  "homepage": "https://github.com/timeline-monoid/timeline-monoid#readme"
+  "homepage": "https://github.com/timeline-monoid/timeline-monoid#readme",
+  "devDependencies": {
+    "eslint": "^4.19.1"
+  }
 }
