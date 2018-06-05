@@ -453,6 +453,7 @@ To build up this library, `timeline` itself is extensively used.
             : (() => {
               const ab = M();
               ab.units = a.units.concat(b.units);
+              ab.val = ab.units.map(unit => unit.val);
               return ab; // (a)(b)
             })();
         a.monoid = true;
