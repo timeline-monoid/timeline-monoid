@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   const freeMonoid = (operator) => {
-    const M = (m = []) => (m.monoid || m.identity)
+    const M = (m) => (!!m && (m.monoid || m.identity))
       ? m
       : (() => {
         const a = b => (b.identity) //M
@@ -11,11 +11,11 @@
             : (() => {
               const ab = M();
               ab.units = a.units.concat(b.units);
-              ab.val = ab.units.map(unit => unit.val);
+              ab.val = ab.units.map(unit => unit.val[0]);
               return ab; // (a)(b)
             })();
         a.monoid = true;
-        a.val = m;
+        a.val = a.val ? [] : [m];
         a.units = [a];
         a.M = (m) => M(m);
         operator(a);
@@ -24,7 +24,7 @@
     M.identity = true;
     return M;
   };
-  //Timeline monoid on freeMonoid =============
+  //Timeline monoid based on freeMonoid =============
   const now = "now";
   const _T = () => freeMonoid(operator);
   const operator = (timeline) => {
@@ -32,11 +32,11 @@
       {
         now: { //timeline[now]
           get() {
-            return timeline.val;
+            return timeline.val[0];
           },
           set(tUpdate) {
             return (() => {
-              timeline.val = tUpdate;
+              timeline.val = [tUpdate];
               timeline._wrapF.map(f => f(tUpdate));
             })();
           }
@@ -74,8 +74,8 @@
         return timeline;
       })();
     //------------------
-    (typeof timeline.val === "function") //_wrapped eventF
-      ? timeline.val(timeline)
+    (typeof timeline.val[0] === "function") //_wrapped eventF
+      ? timeline.val[0](timeline)
       : true;
   }; //-------operator
   const T = _T();

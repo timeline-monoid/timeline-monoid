@@ -3,28 +3,14 @@
   //=========================
   const {T, now} = require("./index");
 
-  const FUNCTION = 'function';
-  const NUMBER = "number";
-  const err = () => {
-    throw new TypeError();
+  const log = (m) => {
+    console.log(m);
+    return m;
   };
-
-  const log = (m) => (typeof m !== FUNCTION)
-    ? (() => {
-      console.log(m);
-      return m;
-    })()
-    : err();
-
   const mlog = (msg) => (m) => {
     console.log(msg + ": " + m);
     return m;
   };
-
-  // return a type checked function
-  const type = s => f => x => (typeof x == s)
-    ? f(x)
-    : err();
 
   const tLog = T();
   tLog.wrap(log);
