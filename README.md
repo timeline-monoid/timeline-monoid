@@ -436,7 +436,11 @@ Obviously, the "custom" `timelilne` can be composed.
 
 **Timeline Monoid** is a minimal library and the code is less than 100 lines.
 
-To build up this library, `timeline` itself is extensively used.
+based on my other library
+
+https://www.npmjs.com/package/free-monoid
+
+free-monoid source code is packed in the same file:
 
 ### SourceCode :
 ```js
@@ -459,10 +463,13 @@ To build up this library, `timeline` itself is extensively used.
         a.val = a.val ? [] : [m];
         a.units = [a];
         a.M = (m) => M(m);
+        a.M.identity = true;
+        a.M.val = (m) => (m);
         operator(a);
         return a;
       })();
     M.identity = true;
+    M.val = (m) => (m);
     return M;
   };
   //Timeline monoid based on freeMonoid =============
