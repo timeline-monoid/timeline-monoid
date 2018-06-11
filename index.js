@@ -1,31 +1,39 @@
 (() => {
   "use strict";
-  const freeMonoid = (operator) => {
-    const M = (m) => (!!m && (!!m.M || m.identity))
-      ? (m)
-      : (() => {
-        const a = b => (b.identity) //M
+  const freeMonoid = (operator) => (() => {
+    Array.prototype.flatten = function() {
+      return Array.prototype.concat.apply([], this);
+    };
+    const M = (() => { //(M)(a)(b)
+      const toList = arr => arr.reduce((a, b) => (a)(b), (M));
+      const m = (a) => (Array.isArray(a))
+        ? toList(a.flatten())
+        : (!!a && (!!a.M || a.identity)) //left id M
           ? (a)
-          : !b.M
-            ? (a)(M(b))
-            : (() => {
-              const ab = M();
-              ab.units = a.units.concat(b.units);
-              ab.val = ab.units.map(unit => unit.val[0]);
-              return ab; // (a)(b)
-            })();
-        a.val = a.val ? [] : [m];
-        a.units = [a];
-        a.M = (m) => M(m);
-        a.M.identity = true;
-        a.M.val = (m) => (m);
-        operator(a);
-        return a;
-      })();
-    M.identity = true;
-    M.val = (m) => (m);
+          : (() => {
+            const ma = b => (b.identity) //right id M
+              ? (ma)
+              : !b.M
+                ? (ma)(M(b))
+                : (() => {
+                  const mab = M();
+                  mab.units = ma.units.concat(b.units);
+                  mab.val = mab.units.map(unit => unit.val[0]);
+                  return mab; // (m)(a)(b)
+                })();
+            ma.M = m;
+            ma.val = [a];
+            ma.units = [ma];
+            operator(ma);
+            return ma;
+          })();
+      m.identity = true;
+      m.val = [m]; //["__IDENTITY__"];
+      m.units = [m];
+      return m;
+    })();
     return M;
-  };
+  })();
   //Timeline monoid based on freeMonoid =============
   const now = "now";
   const _T = () => freeMonoid(operator);
@@ -34,16 +42,17 @@
       {
         now: { //timeline[now]
           get() {
-            return timeline.val[0];
+            return timeline.value[0];
           },
           set(tUpdate) {
             return (() => {
-              timeline.val = [tUpdate];
+              timeline.value = [tUpdate];
               timeline._wrapF.map(f => f(tUpdate));
             })();
           }
         }
       });
+    timeline.value = [];
     timeline._wrapF = [];
     timeline._wrap = f => {
       timeline._wrapF[timeline._wrapF.length] = f;
