@@ -1,6 +1,6 @@
 {
   "name": "timeline-monoid",
-  "version": "1.6.1",
+  "version": "1.9.99",
   "description": "Monoidal Functional Reactive Programming in JavaScript",
   "main": "index.js",
   "scripts": {

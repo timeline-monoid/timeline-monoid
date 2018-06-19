@@ -193,22 +193,18 @@
           //=======================================
           tLog[now] = "---async read-------------";
 
-          const timelineSyncAB = (timelineA)(timelineB); //bind the AB timelines
-          const timelineTodo = timelineSyncAB
-            .sync(([a, b]) => {
-              console.log("Async read: Files A and B are now ready");
-            //console.log(a); //show file contents if needed
-            //console.log(b); //show file contents if needed
-            });
           const asyncStart = T();
-          const asyncABstart = asyncStart
+          const context = asyncStart
             .sync(() => {
               startA[now] = true;
               startB[now] = true;
             });
-          //initiate timeline A&B
-          asyncStart[now] = true;
-          // initiate again
+          const contextAB = (context)(timelineA)(timelineB)
+            .sync(([x, a, b]) => {
+              console.log("Async read: Files A and B are now ready");
+            //console.log(a); //show file contents if needed
+            //console.log(b); //show file contents if needed
+            });
           asyncStart[now] = true;
         //=======================================
         });
@@ -221,26 +217,25 @@
             tLog[now] = "---sync read-------------";
 
             const syncStart = T();
-            const timelineSyncAthenB = (syncStart)
+            const context = syncStart
               .sync(() => {
-                console.log("sync read A then B started");
                 startA[now] = true;
-                return (timelineA);
-              })
-              .sync((a) => {
+              });
+            const contextA = (context)(timelineA)
+              .sync(([x, a]) => {
                 console.log("now A has been read");
-                //console.log(a); //show file contents if needed
+                // console.log(a); //show file contents if needed
                 startB[now] = true;
-                return (timelineB);
-              })
-              .sync((b) => {
+                return true;
+              });
+            const contextB = (context)(timelineB)
+              .sync(([x, b]) => {
                 console.log("then B has been read");
-                //console.log(b); //show file contents if needed
+                //    console.log(b); //show file contents if needed
                 return true;
               });
 
             syncStart[now] = true;
-
           })();
         //============================
         });
