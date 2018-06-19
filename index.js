@@ -62,15 +62,15 @@
         }
       });
     timeline.value = [];
-    timeline._wrapF = [];
-    timeline._wrap = f => {
-      timeline._wrapF[timeline._wrapF.length] = f;
-      return timeline;
-    };
     timeline.sync = f => {
       const syncTL = T();
       timeline._eval()._wrap(val => (syncTL[now] = f(val)));
       return syncTL;
+    };
+    timeline._wrapF = [];
+    timeline._wrap = f => {
+      timeline._wrapF[timeline._wrapF.length] = f;
+      return timeline;
     };
     timeline._eval = () => (timeline.evaluated)
     || (timeline.units.length === 1)
