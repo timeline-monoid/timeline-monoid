@@ -1,24 +1,15 @@
 (() => {
   "use strict";
   //=========================
-  const {T, now} = require("./index");
-
-  const log = (m) => {
-    console.log(m);
-    return m;
-  };
-  const mlog = (msg) => (m) => {
-    console.log(msg + ": " + m);
-    return m;
-  };
+  const {T, now, log, mlog} = require("./index");
 
   const tLog = T();
-  tLog.wrap(log);
+  tLog.sync(log);
 
   const tLog2 = T();
   tLog2
-    .wrap(log)
-    .wrap(log);
+    .sync(log)
+    .sync(log);
   tLog2[now] = "----------------";
 
   tLog[now] = "---identity-------------";
@@ -46,7 +37,6 @@
 
   tLog[now] = "----------------";
 
-
   (() => {
     const a = T();
     a[now] = 1;
@@ -56,8 +46,8 @@
   tLog[now] = "----------------";
 
   (() => {
-    const a = T()
-      .wrap(console.log);
+    const a = T();
+    const tl = a.sync(log);
 
     a[now] = 1;
     a[now] = 5;
@@ -65,78 +55,96 @@
   tLog[now] = "----------------";
 
   (() => {
-    const a = T()
-      .wrap(console.log)
-      .wrap(console.log);
+    const a = T();
+    const tl = a
+      .sync(log)
+      .sync(log);
 
-    a[now] = 1;
+    a[now] = 9;
   })();
   tLog[now] = "----------------";
 
+
   (() => {
-    const a = T()
-      .wrap(console.log);
-    const b = a
-      .sync(a => a * 2)
-      .wrap(console.log);
+    const a = T();
+    const b = a.sync(a => a * 2);
+
+    const tl_a = a.sync(mlog("a"));
+    const tl_b = b.sync(mlog("b"));
+
     a[now] = 1;
     a[now] = 5;
   })();
+
+
   tLog[now] = "----------------";
+
   (() => {
-    const a = T()
-      .wrap(console.log);
+    const a = T();
+    const b = a.sync(a => a * 3);
+    const c = a.sync(a => a * 10);
 
-    const b = a
-      .sync(a => a * 2)
-      .wrap(console.log);
-
-    const c = (a)(b)
-      .sync(([a, b]) => a + b)
-      .wrap(console.log);
+    const tl_a = a.sync(mlog("a"));
+    const tl_b = b.sync(mlog("b"));
+    const tl_c = c.sync(mlog("c"));
 
     a[now] = 1;
+    a[now] = 5;
   })();
 
 
   tLog[now] = "----------------";
   (() => {
     const a = T();
-    const b = (a).sync(a => a * 2);
-    const c = (a)(b).sync(([a, b]) => a + b);
-    const abc = (a)(b)(c).wrap(console.log);
-    const abc2 = ((a)(b))(c).wrap(console.log);
-    const abc3 = (a)((b)(c)).wrap(console.log);
+    const b = a
+      .sync(a => a * 2);
+    const c = (a)(b)
+      .sync(([a, b]) => a + b);
+
+    const abc = (a)(b)(c);
+    const tl = abc.sync(log);
+
+    const abc2 = abc
+      .sync(([a, b, c]) => [a * 2, b * 2, c * 2]);
+    const t2 = abc2.sync(log);
 
     a[now] = 1;
-  //  a[now] = 5;
   })();
 
   tLog[now] = "----------------";
-  const sec1 = T((timeline) => {
-    setTimeout(() => {
-      timeline[now] = "yay!! after 1 sec";
-    }, 1000);
-  }).wrap(mlog("sec_1"));
+  (() => {
+    const a = T();
+    const b = (a)
+      .sync(a => a * 2);
+    const c = (a)(b)
+      .sync(([a, b]) => a + b);
 
-  const sec3 = T((timeline) => {
-    setTimeout(() => {
-      timeline[now] = "yay!! after 3 sec";
-    }, 3000);
-  }).wrap(mlog("sec_3"));
+    const abc = (a)(b)(c)
+      .sync(log);
+    const abc2 = ((a)(b))(c)
+      .sync(log);
+    const abc3 = (a)((b)(c))
+      .sync(log);
 
-  const sec1and3 = (sec1)(sec3)
-    .wrap(console.log); // == T(sec1)(sec3) == sec(sec3)
+    a[now] = 1;
+    a[now] = 5;
+  })();
+
 
   (() => {
-    const a = T().wrap(mlog("a"));
-    const b = T().wrap(mlog("b"));
-    const c = T().wrap(mlog("c"));
-    const abc = (a)(b)(c).wrap(mlog("abc"));
+    const a = T();
+    const b = T();
+    const c = T();
+    const abc = (a)(b)(c);
+
+    const tl_a = a.sync(mlog("a"));
+    const tl_b = b.sync(mlog("b"));
+    const tl_c = c.sync(mlog("c"));
+    const tl_abc = abc.sync(mlog("abc"));
 
     a[now] = 1;
     b[now] = 2; //double update
-    b[now] = 999; //double update
+    b[now] = 999; //and the most recent value will be used
     c[now] = 3;
     tLog[now] = "----------------";
     a[now] = 77;
@@ -144,6 +152,102 @@
     b[now] = 88;
   })();
   tLog[now] = "----------------";
+
+  tLog[now] = "==file read========";
+
+  (() => {
+    const fs = require("fs");
+
+    const startA = T();
+    const startB = T();
+
+    const timelineA = T((timeline) => {
+
+      (startA)
+        .sync(() => fs
+          .readFile("package.json", "utf8", (err, data) => {
+            timeline[now] = data;
+          }));
+
+    });
+
+    const timelineB = T((timeline) => {
+
+      (startB)
+        .sync(() => fs
+          .readFile("index.js", "utf8", (err, data) => {
+            timeline[now] = data;
+          }));
+
+    });
+    const start1 = T((timeline) => {
+      setTimeout(() => (timeline[now] = true), 1000);
+    });
+    const start2 = T((timeline) => {
+      setTimeout(() => (timeline[now] = true), 2000);
+    });
+
+    (() => {
+      const delayTL = (start1)
+        .sync(() => {
+          //=======================================
+          tLog[now] = "---async read-------------";
+
+          const timelineSyncAB = (timelineA)(timelineB); //bind the AB timelines
+          const timelineTodo = timelineSyncAB
+            .sync(([a, b]) => {
+              console.log("Async read: Files A and B are now ready");
+            //console.log(a); //show file contents if needed
+            //console.log(b); //show file contents if needed
+            });
+          const asyncStart = T();
+          const asyncABstart = asyncStart
+            .sync(() => {
+              startA[now] = true;
+              startB[now] = true;
+            });
+          //initiate timeline A&B
+          asyncStart[now] = true;
+          // initiate again
+          asyncStart[now] = true;
+        //=======================================
+        });
+    })();
+    (() => {
+      const delayTL = (start2)
+        .sync(() => {
+          //============================
+          (() => { //sync read
+            tLog[now] = "---sync read-------------";
+
+            const syncStart = T();
+            const timelineSyncAthenB = (syncStart)
+              .sync(() => {
+                console.log("sync read A then B started");
+                startA[now] = true;
+                return (timelineA);
+              })
+              .sync((a) => {
+                console.log("now A has been read");
+                //console.log(a); //show file contents if needed
+                startB[now] = true;
+                return (timelineB);
+              })
+              .sync((b) => {
+                console.log("then B has been read");
+                //console.log(b); //show file contents if needed
+                return true;
+              });
+
+            syncStart[now] = true;
+
+          })();
+        //============================
+        });
+    })();
+  //---------------------------------------
+  })();
+
 
 //============================
 })();

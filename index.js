@@ -36,8 +36,17 @@
   })();
   //Timeline monoid based on freeMonoid =============
   const now = "now";
+  const log = (m) => {
+    console.log(m);
+    return m;
+  };
+  const mlog = (msg) => (m) => {
+    console.log(msg + ": " + m);
+    return m;
+  };
   const _T = () => freeMonoid(operator);
   const operator = (timeline) => {
+    const T = timeline.M;
     Object.defineProperties(timeline, //detect TL update
       {
         now: { //timeline[now]
@@ -58,11 +67,12 @@
       timeline._wrapF[timeline._wrapF.length] = f;
       return timeline;
     };
-    timeline._sync = f => timeline.M(timeline99 => timeline
-      ._wrap(x => (timeline99[now] = f(x))));
-    timeline.wrap = f => timeline.eval()._wrap(f);
-    timeline.sync = f => timeline.eval()._sync(f);
-    timeline.eval = () => (timeline.evaluated)
+    timeline.sync = f => {
+      const syncTL = T();
+      timeline._eval()._wrap(val => (syncTL[now] = f(val)));
+      return syncTL;
+    };
+    timeline._eval = () => (timeline.evaluated)
     || (timeline.units.length === 1)
       ? timeline
       : (() => {
@@ -77,7 +87,7 @@
           ? update()
           : true;
         const updates = timeline.units
-          .map((t) => timeline.M()._wrap(check));
+          .map((t) => T()._wrap(check));
         const dummy0 = timeline.units
           .map((t, i) => t._wrap(() => updates[i][now] = 1));
         const dummy1 = timeline._wrap(reset);
@@ -85,15 +95,20 @@
         return timeline;
       })();
     //------------------
-    (typeof timeline.val[0] === "function") //_wrapped eventF
+    timeline._timeF = () => (typeof timeline.val[0]
+    === "function") //_wrapped eventF
       ? timeline.val[0](timeline)
       : true;
+    //non-lazy evaluate on the creation of timeF TL
+    timeline._timeF();
   }; //-------operator
   const T = _T();
   //------------------
   const timeline = {
+    T: T,
     now: now,
-    T: T
+    log: log,
+    mlog: mlog
   };
   //------------------
   const exporting = (typeof module === "object"
