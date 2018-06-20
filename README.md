@@ -2,6 +2,8 @@
 
 #### npm package: 
 
+https://www.npmjs.com/package/timeline-monoid
+
 ### Super simple yet versatile Functional Reactive Programming(FRP) framework with a minimal implementation for monoidal Timeline datatype
 
 ## Installation
