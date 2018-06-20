@@ -1,8 +1,8 @@
 # Timeline Monoid
 
-#### npm package: <https://www.npmjs.com/package/timeline-monoid>
+#### npm package: 
 
-### A minimal implementation for monoidal Timeline (FRP) datatype
+### Super simple yet versatile Functional Reactive Programming(FRP) framework with a minimal implementation for monoidal Timeline datatype
 
 ## Installation
 
@@ -13,7 +13,7 @@ $ npm install timeline-monoid
 ## Usage
 
 ```js
-  const {T, now} = require("timeline-monoid");
+ const {T, now, log, mlong} = require("timeline-monoid");
 ```
 
 ### Equations
@@ -22,27 +22,25 @@ $ npm install timeline-monoid
    b = a * 2
    c = a + b
 
-   a = 1
-
-or a = 5
-
+   a = 1 or a = 5
    a,b,c ?
 ```
 
-#### The code
+#### code
 
 ```js
-  const a = T();
-  const b = (a).sync(a => a * 2);
-  const c = (a)(b).sync(([a, b]) => a + b);
-  const abc = (a)(b)(c)
-    .wrap(console.log);
+    const a = T();
+    const b = (a).sync(a => a * 2);
+    const c = (a)(b).sync(([a, b]) => a + b);
+    const abc = (a)(b)(c);
 
-  a[now] = 1;
-  a[now] = 5;
+    const timeline = abc.sync(log);
+
+    a[now] = 1;
+    a[now] = 5;
 ```
 
-#### The answer
+#### output
 
 ```js
 [ 1, 2, 3 ]
@@ -53,38 +51,105 @@ or a = 5
 
 Any _time functions_ which is generally called _"events"_ or "_asynchronous events"_ are encapsulated to `timeline` instance, and they are composed to another `timeline` instance.
 
+#### Basic usage
 ```js
-const fs = require("fs");
+      const fs = require("fs");
+      const timelineA = T((timeline) => { // Event encapsulation
+        fs.readFile("package.json", "utf8", (err, data) => {
+          timeline[now] = data;
+        });
+      });
+      const timelineB = T((timeline) => { // Event encapsulation
+        fs.readFile("index.js", "utf8", (err, data) => {
+          timeline[now] = data;
+        });
+      });
+      const timelineAB = (timelineA)(timelineB) // Event Composition
+        .sync(([a, b]) => {
+          console.log("Async read: Files A and B are now ready");
+        //console.log(a); //show file contents if needed
+        //console.log(b); //show file contents if needed
+        });
+```
 
-const timelineA = T((timeline) => { // Event encapsulation
-  fs.readFile("package.json", "utf8", (err, data) => {
-    timeline[now] = data;
-  });
-});
-const timelineB = T((timeline) => { // Event encapsulation
-  fs.readFile("index.js", "utf8", (err, data) => {
-    timeline[now] = data;
-  });
-});
+#### Lazy start and reusable event Timeline
+```js
+    const startA = T();
+    const startB = T();
 
-const todo = ([a, b]) => {
-  console.log("Files A and B are now ready");
-  console.log(a); //show file contents
-  console.log(b);
-};
+    const timelineA = T((timeline) => {
 
-const timelineAB = (timelineA)(timelineB) // Event Composition
-  .wrap(todo);
+      (startA)
+        .sync(() => fs
+          .readFile("package.json", "utf8", (err, data) => {
+            timeline[now] = data;
+          }));
+
+    });
+
+    const timelineB = T((timeline) => {
+
+      (startB)
+        .sync(() => fs
+          .readFile("index.js", "utf8", (err, data) => {
+            timeline[now] = data;
+          }));
+
+    });
+```
+
+#### Async read files on the reusable event Timeline
+```js
+          const asyncStart = T();
+          const context = asyncStart
+            .sync(() => {
+              startA[now] = true;
+              startB[now] = true;
+            });
+          const contextAB = (context)(timelineA)(timelineB)
+            .sync(([x, a, b]) => {
+              console.log("Async read: Files A and B are now ready");
+            //console.log(a); //show file contents if needed
+            //console.log(b); //show file contents if needed
+            });
+
+          asyncStart[now] = true;
+```
+#### Sync read files on the reusable event Timeline
+```js
+            const syncStart = T();
+            const context = syncStart
+              .sync(() => {
+                startA[now] = true;
+              });
+            const contextA = (context)(timelineA)
+              .sync(([x, a]) => {
+                console.log("now A has been read");
+                // console.log(a); //show file contents if needed
+                startB[now] = true;
+                return true;
+              });
+            const contextB = (context)(timelineB)
+              .sync(([x, b]) => {
+                console.log("then B has been read");
+                // console.log(b); //show file contents if needed
+                return true;
+              });
+
+            syncStart[now] = true;
 ```
 
 ### Simple Mouse Draw on Canvas
+
+Live Demo
+https://jsfiddle.net/tdphkfev/
 
 ```html
 <canvas id="canvas1" width="900" height="500"></canvas>
 ```
 
 ```js
-    const canvas = document.getElementById('canvas1');
+   const canvas = document.getElementById('canvas1');
     const ctx = canvas.getContext('2d');
     const draw = ([x0, y0], [x1, y1]) => {
       ctx.beginPath();
@@ -102,12 +167,15 @@ const timelineAB = (timelineA)(timelineB) // Event Composition
     const pointTimeline = T((timeline) => {
       canvas.onmousemove = (e) => timeline[now] = [e.clientX, e.clientY];
     })
-      .wrap((point) => (btnTimeline[now] === 1)
+    
+    const pipeline = pointTimeline
+      .sync((point) => (btnTimeline[now] === 1)
         ? draw(lastPointTimeline[now], point)
-        : true);
+        : true)
+      .sync((point)=>(lastPointTimeline[now]=point ));
 
     const lastPointTimeline = T((timeline) => {
-      pointTimeline.wrap(point => {
+      pointTimeline.sync(point => {
         timeline[now] = point;
       });
     });
@@ -178,15 +246,17 @@ Frozen Block Universe and Human Consciousness
 
 `timeline`datatype is a [functor](https://en.wikipedia.org/wiki/Functor) (a datatype that methods/functions always return the identical datatype, such as [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)).
 
-`timeline` has 2 core methods/functions, `wrap` and `sync`.
+`timeline` has only one method/function,  `sync`.
 
-### timeline.wrap
+### timeline.sync()
 
-`timeline.wrap` returns an identical `timeline` instance (itself) with wrapping a given function that [behave in reactive manner](https://en.wikipedia.org/wiki/Reactive_programming) on every update of `timeline[now]`.
+`timeline.sync()` returns a new `timeline` instance that a given function applied to on every update of `timeline[now]` [in reactive manner](https://en.wikipedia.org/wiki/Reactive_programming) 
+
+`timeline.sync()`  corresponds to `Array.map`, but on TimeLine.
 
 ```js
-    const a = T()
-      .wrap(console.log);
+    const a = T();
+    const timeline = a.sync(log);
 
     a[now] = 1;
     a[now] = 5;
@@ -197,46 +267,40 @@ Frozen Block Universe and Human Consciousness
 5
 ```
 
-As `timeline.wrap` is functor:
+As `timeline.sync` is functor:
 
 ```js
-    const a = T()
-      .wrap(console.log)
-      .wrap(console.log);
+    const a = T();
+    const tl = a
+      .sync(log)
+      .sync(log);
 
-    a[now] = 1;
+    a[now] = 9;
 ```
 
 ```sh
-1
-1
+9
+9
 ```
 
-### timeline.sync
-
-`timeline.sync` returns a new `timeline` instance that a given function applied to on every update of `timeline[now]`.
-
-It corresponds to `Array.map`, but on TimeLine.
-
-Now we have an equation: `b = a * 2`,
+ 
+ 
 
 ```js
-    const a = T()
-      .wrap(console.log);
+    const a = T();
+    const b = (a).sync(a => a * 2);
+    const c = (a)(b).sync(([a, b]) => a + b);
+    const abc = (a)(b)(c);
 
-    const b = a
-      .sync(a => a * 2)
-      .wrap(console.log);
+    const timeline = abc.sync(log);
 
     a[now] = 1;
     a[now] = 5;
 ```
 
 ```sh
-1
-2
-5
-10
+[ 1, 2, 3 ]
+[ 5, 10, 15 ]
 ```
 
 Now, the values `a` and `b` are guaranteed to synchronize with satisfying the equation.
@@ -331,36 +395,33 @@ Now we have 2 equations:
 These equations can be easily implemented to a `timeline` code:
 
 ```js
-const a = T()
-  .wrap(console.log);
+    const a = T();
+    const b = a
+      .sync(a => a * 2);
+    const c = (a)(b)
+      .sync(([a, b]) => a + b);
 
-const b = a
-  .sync(a => a * 2)
-  .wrap(console.log);
+    const timeline = c.sync(log);
 
-const c = (a)(b)
-  .sync(([a, b]) => a + b)
-  .wrap(console.log);
-
-a[now] = 1;
+    a[now] = 1;
 ```
 
 ```sh
-1
-2
 3
 ```
 
 If we need a synchronized update of all of `a`,`b`,`c` which is an atomic update of `[a,b,c]`,
 
 ```js
-const a = T();
-const b = a.sync(a => a * 2);
-const c = (a)(b).sync(([a, b]) => a + b);
-const abc = (a)(b)(c).wrap(console.log);
+    const a = T();
+    const b = a.sync(a => a * 2);
+    const c = (a)(b).sync(([a, b]) => a + b);
 
-a[now] = 1;
-a[now] = 5;
+    const abc = (a)(b)(c);
+    const tl = abc.sync(log);
+
+    a[now] = 1;
+    a[now] = 5;
 ```
 
 ```sh
@@ -399,45 +460,29 @@ Having said that. any event functions can be encapsulated to `timeline` instance
 They can be IO inputs or simply a timer event,
 
 ```js
-  const sec1 = T((timeline) => {
-    setTimeout(() => {
-      timeline[now] = "yay!! after 1 sec";
-    }, 1000);
-  }).wrap(console.log);
-```
-
-```sh
-yay!! after 1 sec
-```
+    const start1 = T((timeline) => {
+      setTimeout(() => (timeline[now] = true), 1000);
+    });
+    const start2 = T((timeline) => {
+      setTimeout(() => (timeline[now] = true), 2000);
+    });
+````
 
 Obviously, the "custom" `timelilne` can be composed.
 
-```js
-  const sec3 = T((timeline) => {
-    setTimeout(() => {
-      timeline[now] = "yay!! after 3 sec";
-    }, 3000);
-  }).wrap(console.log);
 ```
-
-```js
-  const sec1and3 = (sec1)(sec3)
-    .wrap(console.log);
+  (start1)(start2)
+     .sync(doSomethingFunction);
 ```
+## Tiny library in around 100 lines
 
-```sh
-[ 'yay!! after 1 sec', 'yay!! after 3 sec' ]
-```
+**Timeline Monoid** is a minimal library and the code is in around 100 lines
 
-## Tiny library less than 100 lines
+based on my other library `free-monoid`
 
-**Timeline Monoid** is a minimal library and the code is less than 100 lines.
+https://www.npmjs.com/package/free-monoid
 
-based on my other library
-
-<https://www.npmjs.com/package/free-monoid>
-
-free-monoid source code is packed in the same file:
+The latest code of  `free-monoid` is hard-coded and included in the same module file of `timeline-monoid`.
 
 ### SourceCode :
 

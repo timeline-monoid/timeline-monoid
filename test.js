@@ -62,23 +62,36 @@
 
     a[now] = 9;
   })();
-  tLog[now] = "----------------";
+  tLog[now] = "---sample code-------------";
 
 
   (() => {
     const a = T();
-    const b = a.sync(a => a * 2);
+    const b = (a).sync(a => a * 2);
+    const c = (a)(b).sync(([a, b]) => a + b);
+    const abc = (a)(b)(c);
 
-    const tl_a = a.sync(mlog("a"));
-    const tl_b = b.sync(mlog("b"));
+    const timeline = abc.sync(log);
 
     a[now] = 1;
     a[now] = 5;
   })();
 
 
-  tLog[now] = "----------------";
+  tLog[now] = "--simple--------------";
+  (() => {
+    const a = T();
+    const b = a
+      .sync(a => a * 2);
+    const c = (a)(b)
+      .sync(([a, b]) => a + b);
 
+    const timeline = c.sync(log);
+
+    a[now] = 1;
+  })();
+
+  tLog[now] = "----------------";
   (() => {
     const a = T();
     const b = a.sync(a => a * 3);
@@ -93,22 +106,17 @@
   })();
 
 
-  tLog[now] = "----------------";
+  tLog[now] = "-atomic---------------";
   (() => {
     const a = T();
-    const b = a
-      .sync(a => a * 2);
-    const c = (a)(b)
-      .sync(([a, b]) => a + b);
+    const b = a.sync(a => a * 2);
+    const c = (a)(b).sync(([a, b]) => a + b);
 
     const abc = (a)(b)(c);
     const tl = abc.sync(log);
 
-    const abc2 = abc
-      .sync(([a, b, c]) => [a * 2, b * 2, c * 2]);
-    const t2 = abc2.sync(log);
-
     a[now] = 1;
+    a[now] = 5;
   })();
 
   tLog[now] = "----------------";
@@ -157,6 +165,28 @@
 
   (() => {
     const fs = require("fs");
+
+
+    (() => {
+      const timelineA = T((timeline) => { // Event encapsulation
+        fs.readFile("package.json", "utf8", (err, data) => {
+          timeline[now] = data;
+        });
+      });
+      const timelineB = T((timeline) => { // Event encapsulation
+        fs.readFile("index.js", "utf8", (err, data) => {
+          timeline[now] = data;
+        });
+      });
+      const timelineAB = (timelineA)(timelineB) // Event Composition
+        .sync(([a, b]) => {
+          console.log("Async read: Files A and B are now ready");
+        //console.log(a); //show file contents if needed
+        //console.log(b); //show file contents if needed
+        });
+    })();
+
+
 
     const startA = T();
     const startB = T();
@@ -242,6 +272,8 @@
     })();
   //---------------------------------------
   })();
+
+
 
 
 //============================
