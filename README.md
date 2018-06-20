@@ -1,8 +1,8 @@
 # Timeline Monoid
 
-#### npm package: 
+#### npm package:
 
-https://www.npmjs.com/package/timeline-monoid
+<https://www.npmjs.com/package/timeline-monoid>
 
 ### Super simple yet versatile Functional Reactive Programming(FRP) framework with a minimal implementation for monoidal Timeline datatype
 
@@ -54,6 +54,7 @@ $ npm install timeline-monoid
 Any _time functions_ which is generally called _"events"_ or "_asynchronous events"_ are encapsulated to `timeline` instance, and they are composed to another `timeline` instance.
 
 #### Basic usage
+
 ```js
       const fs = require("fs");
       const timelineA = T((timeline) => { // Event encapsulation
@@ -75,6 +76,7 @@ Any _time functions_ which is generally called _"events"_ or "_asynchronous even
 ```
 
 #### Lazy start and reusable event Timeline
+
 ```js
     const startA = T();
     const startB = T();
@@ -101,6 +103,7 @@ Any _time functions_ which is generally called _"events"_ or "_asynchronous even
 ```
 
 #### Async read files on the reusable event Timeline
+
 ```js
           const asyncStart = T();
           const context = asyncStart
@@ -117,7 +120,9 @@ Any _time functions_ which is generally called _"events"_ or "_asynchronous even
 
           asyncStart[now] = true;
 ```
+
 #### Sync read files on the reusable event Timeline
+
 ```js
             const syncStart = T();
             const context = syncStart
@@ -144,7 +149,7 @@ Any _time functions_ which is generally called _"events"_ or "_asynchronous even
 ### Simple Mouse Draw on Canvas
 
 Live Demo
-https://jsfiddle.net/5u9pLgme/1/
+<https://jsfiddle.net/5u9pLgme/1/>
 
 ```html
 <canvas id="canvas1" width="900" height="500"></canvas>
@@ -169,7 +174,7 @@ https://jsfiddle.net/5u9pLgme/1/
     const pointTimeline = T((timeline) => {
       canvas.onmousemove = (e) => timeline[now] = [e.clientX, e.clientY];
     })
-    
+
     const pipeline = pointTimeline
       .sync((point) => (btnTimeline[now] === 1)
         ? draw(lastPointTimeline[now], point)
@@ -180,7 +185,6 @@ https://jsfiddle.net/5u9pLgme/1/
         timeline[now] = point;
       });
     });
-    
 ```
 
 ## Background and Rationale
@@ -252,7 +256,7 @@ Frozen Block Universe and Human Consciousness
 
 ### timeline.sync()
 
-`timeline.sync()` returns a new `timeline` instance that a given function applied to on every update of `timeline[now]` [in reactive manner](https://en.wikipedia.org/wiki/Reactive_programming) 
+`timeline.sync()` returns a new `timeline` instance that a given function applied to on every update of `timeline[now]` [in reactive manner](https://en.wikipedia.org/wiki/Reactive_programming)
 
 `timeline.sync()`  corresponds to `Array.map`, but on TimeLine.
 
@@ -284,9 +288,6 @@ As `timeline.sync` is functor:
 9
 9
 ```
-
- 
- 
 
 ```js
     const a = T();
@@ -468,21 +469,20 @@ They can be IO inputs or simply a timer event,
     const start2 = T((timeline) => {
       setTimeout(() => (timeline[now] = true), 2000);
     });
-````
+```
 
 Obviously, the "custom" `timelilne` can be composed.
 
-```
-  (start1)(start2)
-     .sync(doSomethingFunction);
-```
+      (start1)(start2)
+         .sync(doSomethingFunction);
+
 ## Tiny library in around 100 lines
 
 **Timeline Monoid** is a minimal library and the code is in around 100 lines
 
 based on my other library `free-monoid`
 
-https://www.npmjs.com/package/free-monoid
+<https://www.npmjs.com/package/free-monoid>
 
 The latest code of  `free-monoid` is hard-coded and included in the same module file of `timeline-monoid`.
 
@@ -527,8 +527,17 @@ The latest code of  `free-monoid` is hard-coded and included in the same module 
   })();
   //Timeline monoid based on freeMonoid =============
   const now = "now";
+  const log = (m) => {
+    console.log(m);
+    return m;
+  };
+  const mlog = (msg) => (m) => {
+    console.log(msg + ": " + m);
+    return m;
+  };
   const _T = () => freeMonoid(operator);
   const operator = (timeline) => {
+    const T = timeline.M;
     Object.defineProperties(timeline, //detect TL update
       {
         now: { //timeline[now]
@@ -544,16 +553,17 @@ The latest code of  `free-monoid` is hard-coded and included in the same module 
         }
       });
     timeline.value = [];
+    timeline.sync = f => {
+      const syncTL = T();
+      timeline._eval()._wrap(val => (syncTL[now] = f(val)));
+      return syncTL;
+    };
     timeline._wrapF = [];
     timeline._wrap = f => {
       timeline._wrapF[timeline._wrapF.length] = f;
       return timeline;
     };
-    timeline._sync = f => timeline.M(timeline99 => timeline
-      ._wrap(x => (timeline99[now] = f(x))));
-    timeline.wrap = f => timeline.eval()._wrap(f);
-    timeline.sync = f => timeline.eval()._sync(f);
-    timeline.eval = () => (timeline.evaluated)
+    timeline._eval = () => (timeline.evaluated)
     || (timeline.units.length === 1)
       ? timeline
       : (() => {
@@ -568,7 +578,7 @@ The latest code of  `free-monoid` is hard-coded and included in the same module 
           ? update()
           : true;
         const updates = timeline.units
-          .map((t) => timeline.M()._wrap(check));
+          .map((t) => T()._wrap(check));
         const dummy0 = timeline.units
           .map((t, i) => t._wrap(() => updates[i][now] = 1));
         const dummy1 = timeline._wrap(reset);
@@ -576,15 +586,20 @@ The latest code of  `free-monoid` is hard-coded and included in the same module 
         return timeline;
       })();
     //------------------
-    (typeof timeline.val[0] === "function") //_wrapped eventF
+    timeline._timeF = () => (typeof timeline.val[0]
+    === "function") //_wrapped eventF
       ? timeline.val[0](timeline)
       : true;
+    //non-lazy evaluate on the creation of timeF TL
+    timeline._timeF();
   }; //-------operator
   const T = _T();
   //------------------
   const timeline = {
+    T: T,
     now: now,
-    T: T
+    log: log,
+    mlog: mlog
   };
   //------------------
   const exporting = (typeof module === "object"
