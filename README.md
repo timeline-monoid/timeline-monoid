@@ -190,7 +190,7 @@ https://jsfiddle.net/5u9pLgme/1/
 The basic idea is that **a time-varying value can be represented as a function of time**.
 
 [Structure and Interpretation of Computer Programs(SICP)](https://en.wikipedia.org/wiki/Structure_and_Interpretation_of_Computer_Programs)
-([3.5 Streams](https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-4.html))
+([Chapter 3.5 : Streams](https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-4.html))
 
 > Let's step back and review where this complexity comes from. In an attempt to model real-world phenomena, we made some apparently reasonable decisions: We modeled real-world objects with local state by computational objects with local variables. We identified time variation in the real world with time variation in the computer. We implemented the time variation of the states of the model objects in the computer with assignments to the local variables of the model objects.
 >
