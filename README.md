@@ -144,14 +144,14 @@ Any _time functions_ which is generally called _"events"_ or "_asynchronous even
 ### Simple Mouse Draw on Canvas
 
 Live Demo
-https://jsfiddle.net/tdphkfev/
+https://jsfiddle.net/5u9pLgme/1/
 
 ```html
 <canvas id="canvas1" width="900" height="500"></canvas>
 ```
 
 ```js
-   const canvas = document.getElementById('canvas1');
+    const canvas = document.getElementById('canvas1');
     const ctx = canvas.getContext('2d');
     const draw = ([x0, y0], [x1, y1]) => {
       ctx.beginPath();
@@ -173,14 +173,14 @@ https://jsfiddle.net/tdphkfev/
     const pipeline = pointTimeline
       .sync((point) => (btnTimeline[now] === 1)
         ? draw(lastPointTimeline[now], point)
-        : true)
-      .sync((point)=>(lastPointTimeline[now]=point ));
+        : true);
 
     const lastPointTimeline = T((timeline) => {
       pointTimeline.sync(point => {
         timeline[now] = point;
       });
     });
+    
 ```
 
 ## Background and Rationale
