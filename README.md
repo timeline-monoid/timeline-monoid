@@ -519,8 +519,10 @@ The latest code of  `free-monoid` is hard-coded and included in the same module 
             return ma;
           })();
       m.identity = true;
+      m.M = m;
       m.val = [m]; //["__IDENTITY__"];
       m.units = [m];
+      operator(m);
       return m;
     })();
     return M;

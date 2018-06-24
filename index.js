@@ -28,8 +28,10 @@
             return ma;
           })();
       m.identity = true;
+      m.M = m;
       m.val = [m]; //["__IDENTITY__"];
       m.units = [m];
+      operator(m);
       return m;
     })();
     return M;
