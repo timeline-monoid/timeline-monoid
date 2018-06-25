@@ -149,7 +149,7 @@ Any _time functions_ which is generally called _"events"_ or "_asynchronous even
 ### Simple Mouse Draw on Canvas
 
 Live Demo
-<https://jsfiddle.net/5u9pLgme/1/>
+<https://jsfiddle.net/5u9pLgme/8/>
 
 ```html
 <canvas id="canvas1" width="900" height="500"></canvas>
