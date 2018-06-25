@@ -1,5 +1,7 @@
 # Timeline Monoid
 
+![](kenokabetech.github.io/img/timeline-logolog.png)
+
 #### npm package:
 
 <https://www.npmjs.com/package/timeline-monoid>
