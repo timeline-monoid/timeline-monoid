@@ -1,12 +1,12 @@
 # Timeline Monoid
 
-![](kenokabetech.github.io/img/timeline-logolog.png)
+![](https://kenokabetech.github.io/img/timeline-logolog.png)
+
+### Super simple yet versatile Functional Reactive Programming(FRP) framework with a minimal implementation for monoidal Timeline datatype
 
 #### npm package:
 
 <https://www.npmjs.com/package/timeline-monoid>
-
-### Super simple yet versatile Functional Reactive Programming(FRP) framework with a minimal implementation for monoidal Timeline datatype
 
 ## Installation
 
